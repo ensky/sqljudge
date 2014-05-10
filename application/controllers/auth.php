@@ -4,27 +4,29 @@ class Auth extends MY_Controller {
     public function index () {
         show_404();
     }
-
+    
     private function _login_check () {
         if (! $this->isTesting) {
             $startTime = $this->config->item('start_time', 'sqljudge');
             $endTime = $this->config->item('end_time', 'sqljudge');
             return "out of testing time ($startTime - $endTime)";
         }
-        if (! $this->input->post('stdid') OR ! $this->input->post('email'))
+        if (! $this->input->post('stdid'))
             return '';
         $stdid = $this->input->post('stdid');
-        $email = $this->input->post('email');
         $okay = $this->db->select('count(*) AS count')->from('students')
             ->where('stdid', $stdid)
-            ->where('email', $email)
             ->get()->row()->count;
         if ($okay != '1') {
-            $this->logger->log("login failed, stdid: $stdid, email: $email", 'auth');
+            $this->db->insert('students', array(
+                    'stdid' => $stdid,
+                    'email' => '',
+                    'score' => 0
+                ));
+            $okay = '1';
         }
-        return $okay === '1' ? True : 'Wrong student ID or Email';
+        return $okay === '1' ? True : 'Wrong student ID';
     }
-
     private function _login () {
         $id = $this->db->select('id')->from('students')->where('stdid', $this->input->post('stdid'))->get()->row()->id;
         $this->session->set_userdata('id', $id);

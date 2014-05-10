@@ -10,9 +10,5 @@
         <label for="stdid">Student ID</label>
         <input class="form-control" id="stdid" name="stdid" autofocus placeholder="Enter your Student ID">
     </div>
-    <div class="form-group">
-        <label for="email">Email(E3)</label>
-        <input class="form-control" id="email" name="email" placeholder="Enter your Email of the E3 system">
-    </div>
     <button class="btn btn-primary">Login</button>
 </form>
