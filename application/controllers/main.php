@@ -3,8 +3,8 @@
 class Main extends MY_Controller {
     function __construct () {
         parent::__construct();
-        if (!$this->id) {
-            redirect('auth/login');
+        if (! $this->id OR ! $this->isTesting) {
+            redirect('auth/logout');
         }
     }
 

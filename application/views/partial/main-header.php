@@ -9,3 +9,23 @@
 <h4>Score: <?= $score ?></h4>
 
 <hr>
+<script type="text/javascript">
+$(function () {
+    var elTimeRemains = $('#time-remains');
+    var expireTime = <?= (strtotime($this->config->item('end_time', 'sqljudge'))) ?>;
+    var computeInterval = function () {
+        var totalSec = expireTime - parseInt(new Date().getTime() / 1000, 10),
+            hours = parseInt( totalSec / 3600 ) % 24,
+            minutes = parseInt( totalSec / 60 ) % 60,
+            seconds = totalSec % 60,
+            result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+        if (totalSec > expireTime) {
+            location.reload();
+        } else {
+            elTimeRemains.text(result);
+        }
+    };
+    var interval = setInterval(computeInterval, 1000);
+    computeInterval();
+});
+</script>

@@ -6,6 +6,11 @@ class Auth extends MY_Controller {
     }
 
     private function _login_check () {
+        if (! $this->isTesting) {
+            $startTime = $this->config->item('start_time', 'sqljudge');
+            $endTime = $this->config->item('end_time', 'sqljudge');
+            return "out of testing time ($startTime - $endTime)";
+        }
         if (! $this->input->post('stdid') OR ! $this->input->post('email'))
             return '';
         $stdid = $this->input->post('stdid');
