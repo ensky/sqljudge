@@ -1,0 +1,75 @@
+body {
+    background: url('../img/bg.jpg');
+}
+
+.block {
+    margin-left: 0;
+    margin-right: 0;
+    background-color: #fff;
+    border: 1px #ddd solid;
+    border-radius: 4px 4px 0 0;
+    box-shadow: none;
+    position: relative;
+    padding: 5px 15px 15px;
+    margin-top: 5px;
+}
+.CodeMirror {
+    font-size: 120%;height: 200px;
+}
+
+.dbtables {
+    overflow-x: scroll;
+}
+
+.dbtable {
+    width: 100%;
+    border-collapse: collapse;
+    color: rgba(0,0,0,.8);
+    position: relative;
+    background-color: #FFF;
+    -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,.1);
+    box-shadow: 0 0 0 1px rgba(0,0,0,.1);
+    margin: 1em 0;
+    padding: 1em;
+    border-radius: 5px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.dbtable tr {
+    border-collapse: collapse;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: all .1s ease-out;
+    -moz-transition: all .1s ease-out;
+    transition: all .1s ease-out;
+}
+
+.dbtable th {
+    border: 1px solid rgba(0,0,0,.1);
+}
+
+.dbtable td {
+    border: 1px solid rgba(0,0,0,.1);
+    padding: .4em .7em;
+    vertical-align: middle;
+    border-collapse: collapse;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: all .1s ease-out;
+    -moz-transition: all .1s ease-out;
+    transition: all .1s ease-out;
+}
+
+.dbtable th {
+    background-color: rgba(0,0,0,.05);
+    color: rgba(0,0,0,.8);
+    padding: .5em .7em;
+    vertical-align: middle;
+}
