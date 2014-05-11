@@ -24,7 +24,7 @@ class TA extends MY_Controller {
             if ($id === False) {
                 $this->db->insert('problems', $data);
                 $id = $this->db->insert_id();
-                redirect('main/ta_problem_edit/' . $id);
+                redirect('ta/problem_edit/' . $id);
             } else {
                 $this->db->where('id', $id)
                     ->update('problems', $data);
