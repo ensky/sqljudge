@@ -1,4 +1,4 @@
-<?= form_open('main/ta_problem_edit/' . $problem->id, ['method' => 'post']) ?>
+<?= form_open('ta/problem_edit/' . $problem->id, ['method' => 'post']) ?>
 <div class="form-group">
     <label for="title">Title</label>
     <input type="text" id="title" name="title" class="form-control" value="<?= $problem->title ?>">
