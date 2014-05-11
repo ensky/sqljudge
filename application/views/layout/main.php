@@ -19,10 +19,10 @@
     <script src="<?= base_url('js/jquery.min.js') ?>"></script>
 </head>
 <body>
-    <div id="container" class="container">
+    <div id="container" class="container-fluid">
         <?= $body ?>
     </div>
-    <div class="container">
+    <div class="container-fluid">
         <hr>
         Created by <a target="_blank" href="http://www.ensky.tw">EnskyLin</a>
     </div>
