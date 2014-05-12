@@ -24,7 +24,7 @@ class TA extends MY_Controller {
             if ($id === False) {
                 $this->db->insert('problems', $data);
                 $id = $this->db->insert_id();
-                redirect('main/ta_problem_edit/' . $id);
+                redirect('ta/problem_edit/' . $id);
             } else {
                 $this->db->where('id', $id)
                     ->update('problems', $data);
@@ -59,4 +59,34 @@ class TA extends MY_Controller {
     public function student () {
         // TODO: view stdid and email
     }
+    
+    private function getResultNTable ($problem_id, $database, $SQL = '') {
+        if ($problem_id == false) 
+            return (object)['data' => [], 'tables' => []];
+
+        $db = $this->load->database($database, True);
+        $result = (object)[];
+
+        $problem = $this->db->select('*')
+            ->from('problems')
+            ->where('id', $problem_id)->get()->row();
+
+        $SQL = empty($SQL) ? $problem->answer : $SQL;
+        $query = $db->query($SQL);
+        if (!$query) {
+            $result->error = $db->_error_message();
+            $result->data = [];
+        } else {
+            $result->error = false;
+            $result->data = $query->result_array();
+        }
+
+        $result->tables = [];
+        $tables = explode(',', $problem->tables);
+        foreach ($tables as $table) {
+            $result->tables[$table] = $db->select('*')->from($table)->get()->result();
+        }
+        return $result;
+    }
+
 }

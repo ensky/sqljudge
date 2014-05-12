@@ -1,4 +1,4 @@
-<?= form_open('main/ta_problem_edit/' . $problem->id, ['method' => 'post']) ?>
+<?= form_open('ta/problem_edit/' . $problem->id, ['method' => 'post']) ?>
 <div class="form-group">
     <label for="title">Title</label>
     <input type="text" id="title" name="title" class="form-control" value="<?= $problem->title ?>">
@@ -73,16 +73,14 @@
 
 <script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
 <script>
-    $(function () {
-        tinymce.init({selector:'.tinymce'});
+    tinymce.init({selector:'.tinymce'});
 
-        $('button.fold').click(function () {
-            var el = $(this).attr('data-target'),
-                span = $(this).find('span');
-            $(el).find('tbody').toggle(500);
-            var css = span.hasClass('glyphicon-minus') ? 'glyphicon-plus' : 'glyphicon-minus';
-            span.attr('class', 'glyphicon ' + css);
-        });
-        $('.folded tbody').hide();
-    }); 
+    $('button.fold').click(function () {
+        var el = $(this).attr('data-target'),
+            span = $(this).find('span');
+        $(el).find('tbody').toggle(500);
+        var css = span.hasClass('glyphicon-minus') ? 'glyphicon-plus' : 'glyphicon-minus';
+        span.attr('class', 'glyphicon ' + css);
+    });
+    $('.folded tbody').hide();
 </script>
