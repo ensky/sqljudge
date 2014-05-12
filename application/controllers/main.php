@@ -45,17 +45,18 @@ class Main extends MY_Controller {
             redirect('main');
         }
 
-        $result = (object) [];
+        $result = (object) [
+            'error' => '',
+            'type' => ''
+        ];
         $inputSQL = $this->input->post('query');
         if ($inputSQL) {
             $type = $this->input->post('type') === 'Test' ? 'test' : 'judge';
             $db = $this->load->database($type, True);
 
-            $result = (object)$this->getResultNTable($id, $type, $inputSQL);
-            $result->type = $type;
-            if ($result->type == 'judge') {
-                $answer = $this->getResultNTable($id, $type)->data;
-                if (json_encode($answer) == json_encode($result->data)) {
+            if ($type == 'judge') {
+                $result->type = $type;
+                if ($this->judgeing($problem->answer, $inputSQL, $db)) {
                     $result->is_correct = '1';
                 } else {
                     $result->is_correct = '0';
@@ -75,6 +76,8 @@ class Main extends MY_Controller {
                 $result->data = [];
                 $this->logger->log('submit an answer, result: ' . $result->is_correct, 'problem:'. $id, $inputSQL);
             } else {
+                $result = (object)$this->getResultNTable($id, $type, $inputSQL);
+                $result->type = $type;
                 $this->logger->log('test an answer', 'problem:'. $id, $inputSQL);
             }
         }
@@ -89,7 +92,6 @@ class Main extends MY_Controller {
             'is_correct' => false
         ];
         $solved = $answer->is_correct == '1';
-
         $this->render('main', 'problem', [
             'problem' => $problem,
             'answer' => $answer,
@@ -101,6 +103,23 @@ class Main extends MY_Controller {
                 ->where('id', $this->id)
                 ->get()->row()->score
         ]);
+    }
+
+    private function judgeing ($sql1, $sql2, &$db) {
+$sql = <<<SQL
+SELECT
+  CASE WHEN count1 = count2 AND count1 = count3 THEN 'identical' ELSE 'mis-matched' END AS result
+FROM
+(
+  SELECT
+    (SELECT COUNT(*) FROM ($sql1) T1) AS count1,
+    (SELECT COUNT(*) FROM ($sql2) T2) AS count2,
+    (SELECT COUNT(*) FROM (SELECT * FROM ($sql1) T1 UNION SELECT * FROM ($sql2) T2) AS unioned) AS count3
+)
+  AS counts
+SQL;
+        $q = $db->query($sql);
+        return $q->row()->result === 'identical';
     }
 
     private function getResultNTable ($problem_id, $database, $SQL = '') {
