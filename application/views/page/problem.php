@@ -81,7 +81,6 @@
                 <?php if($result->error): ?>
                 <div class="alert alert-danger">Database error: <?= $result->error ?></div>
                 <?php endif; ?>
-
                 <?php if($result->type == "judge"): ?>
                     <?php if($result->is_correct): ?>
                         <div class="alert alert-success">Your answer is correct! please answer the next question <a href="<?= site_url('main') ?>">Go Back</a>.</div>
