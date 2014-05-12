@@ -11,7 +11,7 @@ class Main extends MY_Controller {
 	public function index() {
         $problems = $this->db->select('*')
             ->from('problems')
-            ->order_by('id')
+            ->order_by('order')
             ->get()->result();
         
         $answers = $this->db->select('*')

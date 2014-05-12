@@ -1,5 +1,9 @@
 <?= form_open('ta/problem_edit/' . $problem->id, ['method' => 'post']) ?>
 <div class="form-group">
+    <label for="order">Order</label>
+    <input type="text" id="order" name="order" placeholder="題號" class="form-control" value="<?= $problem->order ?>">
+</div>
+<div class="form-group">
     <label for="title">Title</label>
     <input type="text" id="title" name="title" class="form-control" value="<?= $problem->title ?>">
 </div>
@@ -13,7 +17,7 @@
 </div>
 <div class="form-group">
     <label for="score">Score</label>
-    <input type="text" id="score" name="score" placeholder="就是配分" class="form-control" value="<?= $problem->score ?>">
+    <input type="text" id="score" name="score" placeholder="就是配分" class="form-control" value="<?= ($problem->score ? $problem->score : 5) ?>">
 </div>
 <div class="form-group">
     <label>Answer SQL</label>

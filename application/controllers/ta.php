@@ -15,6 +15,7 @@ class TA extends MY_Controller {
     public function problem_edit ($id = False) {
         if ($this->input->post() != false) {
             $data = [
+                'order' => $this->input->post('order'),
                 'title' => $this->input->post('title'),
                 'description' => $this->input->post('description'),
                 'score' => $this->input->post('score'),
@@ -31,6 +32,7 @@ class TA extends MY_Controller {
             }
         }
         $problem = (object)[
+            'order' => '',
             'id' => '',
             'title' => '',
             'description' => '',
