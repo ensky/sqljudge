@@ -3,13 +3,9 @@
 class TA extends MY_Controller {
     function __construct () {
         parent::__construct();
-        if (!$this->isTA()) {
+        if (!$this->isTA) {
             redirect('auth/login');
         }
-    }
-
-    private function isTA () {
-        return $this->id;
     }
 
     public function problem_edit ($id = False) {

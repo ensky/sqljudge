@@ -13,6 +13,7 @@ class MY_Controller extends CI_Controller {
         $this->isTesting = 
             time() >= strtotime($this->config->item('start_time', 'sqljudge'))
             && time() <= strtotime($this->config->item('end_time', 'sqljudge'));
+        $this->isTA = preg_match('/^140.113.240.\d+$/', $_SERVER['REMOTE_ADDR']);
     }
 
     protected function is_pjax () {

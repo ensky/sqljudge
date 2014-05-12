@@ -119,6 +119,8 @@ FROM
   AS counts
 SQL;
         $q = $db->query($sql);
+        if (!$q)
+            return false;
         return $q->row()->result === 'identical';
     }
 

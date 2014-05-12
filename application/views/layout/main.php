@@ -33,7 +33,7 @@
     <script type="text/javascript" src="<?= base_url('js/jquery-ui-1.10.4.min.js') ?>"></script>
     <script type="text/javascript" src="<?= base_url('js/jquery.doublescroll.js') ?>"></script>
     <script type="text/javascript">
-    $(document).pjax('a', '#container');
+    $(document).pjax('a:not(.npjax)', '#container');
     $(document).on('submit', 'form[data-pjax]', function(event) {
         $.pjax.submit(event, '#container')
     });
