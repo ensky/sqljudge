@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="<?= base_url('css/codemirror.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= base_url('css/codemirror/base16-light.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= base_url('css/main.css') ?>">
+    <link rel="stylesheet" type="text/css" href="<?= base_url('css/datatable.css') ?>">
     
     <script src="<?= base_url('js/jquery.min.js') ?>"></script>
 </head>
@@ -32,8 +33,9 @@
     <script type="text/javascript" src="<?= base_url('js/pjax.js') ?>"></script>
     <script type="text/javascript" src="<?= base_url('js/jquery-ui-1.10.4.min.js') ?>"></script>
     <script type="text/javascript" src="<?= base_url('js/jquery.doublescroll.js') ?>"></script>
+    <script type="text/javascript" src="<?= base_url('js/datatables.js') ?>"></script>
     <script type="text/javascript">
-    $(document).pjax('a', '#container');
+    $(document).pjax('a:not(.npjax)', '#container');
     $(document).on('submit', 'form[data-pjax]', function(event) {
         $.pjax.submit(event, '#container')
     });

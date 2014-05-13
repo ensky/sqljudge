@@ -1,6 +1,7 @@
 <?php $this->load->view('partial/main-header', ['score' => $score]); ?>
 
-<small id="title"><a href="<?= site_url('main') ?>" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to the Problem list</a></small>
+<a id="title" href="<?= site_url('main') ?>" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to the Problem list</a>
+
 <h2>
     <div><span class="label label-<?= $solved ? 'success' : 'primary' ?>"><?= $solved ? 'solved' : 'unsolved' ?></span> <?= $problem->title ?></div>
 </h2>

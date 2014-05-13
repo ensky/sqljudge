@@ -1,4 +1,9 @@
+<small id="title"><a href="<?= site_url('main') ?>" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to the Problem list</a></small>
 <?= form_open('ta/problem_edit/' . $problem->id, ['method' => 'post']) ?>
+<div class="form-group">
+    <label for="order">Order</label>
+    <input type="text" id="order" name="order" placeholder="題號" class="form-control" value="<?= $problem->order ?>">
+</div>
 <div class="form-group">
     <label for="title">Title</label>
     <input type="text" id="title" name="title" class="form-control" value="<?= $problem->title ?>">
@@ -13,7 +18,7 @@
 </div>
 <div class="form-group">
     <label for="score">Score</label>
-    <input type="text" id="score" name="score" placeholder="就是配分" class="form-control" value="<?= $problem->score ?>">
+    <input type="text" id="score" name="score" placeholder="就是配分" class="form-control" value="<?= ($problem->score ? $problem->score : 5) ?>">
 </div>
 <div class="form-group">
     <label>Answer SQL</label>
@@ -25,7 +30,7 @@
 <hr>
 
 <div class="row">
-<div class="col-md-6">
+<div class="col-md-12">
     <h3>Testing database</h3>
     <div class="block">
         <h2>Result <small>Testing result will display here</small></h2>
@@ -47,6 +52,7 @@
         <?php endforeach; ?>
     </div>
 </div>
+<?php /*
 <div class="col-md-6">
     <h3>Judging  database</h3>
     <div class="block">
@@ -70,10 +76,17 @@
     </div>
 </div>
 </div>
+*/ ?>
 
 <script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
 <script>
-    tinymce.init({selector:'.tinymce'});
+    tinymce.init({
+        selector:'.tinymce',
+        plugins: [
+            'contextmenu code image'
+        ],
+        contextmenu: "link image inserttable | cell row column deletetable"
+    });
 
     $('button.fold').click(function () {
         var el = $(this).attr('data-target'),

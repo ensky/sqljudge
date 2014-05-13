@@ -3,18 +3,53 @@
 class TA extends MY_Controller {
     function __construct () {
         parent::__construct();
-        if (!$this->isTA()) {
+        if (!$this->isTA) {
             redirect('auth/login');
         }
     }
 
-    private function isTA () {
-        return $this->id;
+    function index () {
+        redirect('ta/log');
+    }
+
+    public function get_log ($log_id = 0) {
+        $time = 0;
+        do {
+            if ($time != 0) {
+                sleep(1);
+            }
+            $time++;
+            $query = $this->db->select('*')->from('logs_view')->where('id > ', $log_id)
+                ->order_by('id', 'desc')
+                ->get();
+        } while ($query->num_rows() == 0 && $time <= 20);
+        echo json_encode($query->result());
+    }
+
+    public function log () {
+        $this->render('main', 'log', []);
+    }
+
+    public function setting () {
+        if ($this->input->post() !== false) {
+            $data = $this->input->post();
+            $insert = array();
+            foreach ($data as $key => $val) {
+                $insert['key'] = $key;
+                $insert['value'] = $val;
+                $str = $this->db->insert_string('settings', $insert);
+                $str = str_replace('INSERT', 'REPLACE', $str);
+                $this->db->query($str);
+            }
+        }
+        $settings = $this->db->select('*')->from('settings')->order_by('key')->get()->result();
+        $this->render('main', 'settings', ['settings' => $settings]);
     }
 
     public function problem_edit ($id = False) {
         if ($this->input->post() != false) {
             $data = [
+                'order' => $this->input->post('order'),
                 'title' => $this->input->post('title'),
                 'description' => $this->input->post('description'),
                 'score' => $this->input->post('score'),
@@ -31,6 +66,7 @@ class TA extends MY_Controller {
             }
         }
         $problem = (object)[
+            'order' => '',
             'id' => '',
             'title' => '',
             'description' => '',
@@ -52,14 +88,6 @@ class TA extends MY_Controller {
         ]);
     }
 
-    public function log () {
-        // TODO: view log
-    }
-
-    public function student () {
-        // TODO: view stdid and email
-    }
-    
     private function getResultNTable ($problem_id, $database, $SQL = '') {
         if ($problem_id == false) 
             return (object)['data' => [], 'tables' => []];

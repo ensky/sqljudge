@@ -10,13 +10,11 @@ class MY_Controller extends CI_Controller {
         $this->loggedIn = $this->session->userdata('id') !== false;
         $this->id = $this->session->userdata('id');
         $this->stdid = $this->session->userdata('stdid');
+        $this->isTA = preg_match('/^140.113.240.\d+$/', $_SERVER['REMOTE_ADDR']);
         $this->isTesting = 
-            preg_match('/^140.113.240.\d{1,3}$/', $_SERVER['REMOTE_ADDR'])
-            ||
-            (
-                time() >= strtotime($this->config->item('start_time', 'sqljudge'))
-                && time() <= strtotime($this->config->item('end_time', 'sqljudge'))
-            );
+            $this->isTA ||
+            time() >= strtotime($this->setting->get('start_time'))
+            && time() <= strtotime($this->setting->get('end_time'));
     }
 
     protected function is_pjax () {

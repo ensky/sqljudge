@@ -9,9 +9,10 @@ class Main extends MY_Controller {
     }
 
 	public function index() {
-        $problems = $this->db->select('*')
-            ->from('problems')
-            ->order_by('id')
+        $problems = $this->db->select('P.*, PA.correct, PA.total_submit')
+            ->from('problems P')
+            ->join('(SELECT problem_id, SUM(is_correct) AS correct, COUNT(*) AS total_submit FROM student_answers GROUP BY problem_id) AS PA', 'P.id = PA.problem_id', 'LEFT')
+            ->order_by('order')
             ->get()->result();
         
         $answers = $this->db->select('*')
@@ -119,6 +120,8 @@ FROM
   AS counts
 SQL;
         $q = $db->query($sql);
+        if (!$q)
+            return false;
         return $q->row()->result === 'identical';
     }
 
