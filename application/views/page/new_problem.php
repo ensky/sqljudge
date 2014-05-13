@@ -83,7 +83,7 @@
     tinymce.init({
         selector:'.tinymce',
         plugins: [
-            'contextmenu code'
+            'contextmenu code image'
         ],
         contextmenu: "link image inserttable | cell row column deletetable"
     });

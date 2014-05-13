@@ -80,7 +80,7 @@ $autoload['helper'] = array('url', 'form');
 |
 */
 
-$autoload['config'] = array('sqljudge');
+$autoload['config'] = array();
 
 
 /*
@@ -109,7 +109,7 @@ $autoload['language'] = array();
 |
 */
 
-$autoload['model'] = array('logger');
+$autoload['model'] = array('logger', 'setting');
 
 
 /* End of file autoload.php */

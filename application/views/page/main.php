@@ -6,7 +6,9 @@
 <table class="table table-striped">
     <thead>
         <tr>
+            <th>No</th>
             <th>Problem</th>
+            <th>Correct/Answer</th>
             <th>Score</th>
             <th>Result</th>
         </tr>
@@ -14,9 +16,11 @@
     <tbody>
         <?php foreach ($problems as $problem): ?>
         <tr>
+            <td><?= $problem->order ?></td>
             <td class="col-md-8">
                 <a href="<?= site_url('main/problem/'.$problem->id) ?>#title" style="font-weight: bold"><?= $problem->title ?></a>
             </td>
+            <td><?= $problem->correct ?> / <?= $problem->total_submit ?></td>
             <td><?= $problem->score?> %</td>
             <td>
                 <?php $correct_stat = !isset($answers[$problem->id]) ? NULL : ($answers[$problem->id] === '1' ? True : False);
