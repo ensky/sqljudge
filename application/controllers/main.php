@@ -56,8 +56,9 @@ class Main extends MY_Controller {
             $db = $this->load->database($type, True);
 
             if ($type == 'judge') {
+                $testDB = $this->load->database('test', True);
                 $result->type = $type;
-                if ($this->judgeing($problem->answer, $inputSQL, $db)) {
+                if ($this->judgeing($problem->answer, $inputSQL, $db) && $this->judgeing($problem->answer, $inputSQL, $testDB)) {
                     $result->is_correct = '1';
                 } else {
                     $result->is_correct = '0';
