@@ -1,10 +1,8 @@
 <h1>Help</h1>
 <ul>
-    <li>If there is any problem, you can discuss this demo test on e3 forum, we've opened a forum for it.</li>
-    <li>The test will be closed book, open reference(reference only, no any other website)</li>
-    <li>Refernce: <a target="_blank" href="http://dev.mysql.com/doc/refman/5.6/en/functions.html">http://dev.mysql.com/doc/refman/5.6/en/functions.html</a></li>
-    <li>Refernce: <a target="_blank" href="http://docs.oracle.com/cd/E17952_01/refman-5.6-en/refman-5.6-en.pdf">http://docs.oracle.com/cd/E17952_01/refman-5.6-en/refman-5.6-en.pdf</a></li>
-    <li>Refernce: <a target="_blank" href="http://docstore.mik.ua/orelly/linux/sql/ch15_01.htm">http://docstore.mik.ua/orelly/linux/sql/ch15_01.htm</a></li>
-    <li>Reference: you can see <a target="_blank" href="http://e3.nctu.edu.tw">e3</a> for the course slides</li>
+    <li>This test is closed book, open reference(reference only, no any other website)</li>
+    <li>Reference: <a target="_blank" href="http://db2014.ensky.tw/mysql-refman-5.5-en.chm">MySQL E-Book(highly recommanded!)</a></li>
+    <li>Reference: <a target="_blank" href="http://db2014.ensky.tw/w3schools/sql/default.asp">W3Schools</a></li>
+    <li>Reference: <a target="_blank" href="http://db2014.ensky.tw/slides.zip">Course slides</a></li>
 </ul>
 <a href="<?= site_url('main') ?>" class="btn btn-primary">I Accept</a>
