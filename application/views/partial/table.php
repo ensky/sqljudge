@@ -1,5 +1,5 @@
 <?php if (isset($table[0])): ?>
-<table class="dbtable">
+<table class="dbtable table-striped table-hover">
     <thead>
         <tr>
             <?php foreach ($table[0] as $col => $names): ?>

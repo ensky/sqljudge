@@ -50,7 +50,7 @@ class Main extends MY_Controller {
             'error' => '',
             'type' => ''
         ];
-        $inputSQL = $this->input->post('query');
+        $inputSQL = $this->killSemicolon($this->input->post('query'));
         if ($inputSQL) {
             $type = $this->input->post('type') === 'Test' ? 'test' : 'judge';
             $db = $this->load->database($type, True);
@@ -107,7 +107,17 @@ class Main extends MY_Controller {
         ]);
     }
 
+    private function killSemicolon ($sql) {
+        return preg_replace('/;+[\s\t]*$/', '', $sql);
+    }
+
     private function judgeing ($sql1, $sql2, &$db) {
+        $sql1 = "(\n" . $sql1 . "\n)";
+        $sql2 = "(\n" . $sql2 . "\n)";
+        $c1 = $db->query("SELECT COUNT(*) c FROM $sql1 T1");
+        $c2 = $db->query("SELECT COUNT(*) c FROM $sql2 T2");
+        $c3 = $db->query("SELECT COUNT(*) c FROM (SELECT * FROM $sql1 T1 UNION SELECT * FROM $sql2 T2) AS unioned");
+        /*
 $sql = <<<SQL
 SELECT
   CASE WHEN count1 = count2 AND count1 = count3 THEN 'identical' ELSE 'mis-matched' END AS result
@@ -119,11 +129,16 @@ FROM
     (SELECT COUNT(*) FROM (SELECT * FROM ($sql1) T1 UNION SELECT * FROM ($sql2) T2) AS unioned) AS count3
 )
   AS counts
-SQL;
-        $q = $db->query($sql);
-        if (!$q)
-            return false;
-        return $q->row()->result === 'identical';
+SQL;*/
+        // $q = $db->query($sql);
+        // if (!$q)
+            // return false;
+        // return $q->row()->result === 'identical';
+        return $c1 && $c2 && $c3 && $c1->num_rows() == 1
+            && $c2->num_rows() == 1
+            && $c3->num_rows() == 1
+            && ($c1n = $c1->row()->c) == $c2->row()->c
+            && $c1n == $c3->row()->c;
     }
 
     private function getResultNTable ($problem_id, $database, $SQL = '') {

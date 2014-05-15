@@ -1,8 +1,10 @@
 <div class="header">
     <h1>Database 2014 online judging system</h1>
 </div>
-
-<?= form_open('auth/login', ['class'=>'form', 'method' => 'post']); ?>
+<?= form_open('auth/login', ['class'=>'form', 'method' => 'post']) ?>
+    <?php if ($this->session->flashdata('err')): ?>
+    <div class="alert alert-danger"><?= $this->session->flashdata('err') ?></div>
+    <?php endif; ?>
     <?php if (!empty($errors)): ?>
     <div class="alert alert-danger"><?= $errors ?></div>
     <?php endif; ?>

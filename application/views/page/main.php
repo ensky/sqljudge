@@ -3,7 +3,7 @@
 <?php if ($this->isTA): ?>
 <a class="npjax btn btn-success" href="<?= site_url('ta/problem_edit/') ?>"><span class="glyphicon glyphicon-plus"></span> New problem</a>
 <?php endif; ?>
-<table class="table table-striped">
+<table class="table table-striped table-hover">
     <thead>
         <tr>
             <th>No</th>

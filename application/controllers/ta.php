@@ -12,6 +12,14 @@ class TA extends MY_Controller {
         redirect('ta/log');
     }
 
+    public function unlock ($stdid) {
+        $this->db->where('stdid', $stdid)
+            ->update('students', [
+                    'lock_hash' => ''
+                ]);
+        echo 'ok';
+    }
+
     public function get_log ($log_id = 0) {
         $time = 0;
         do {
@@ -42,7 +50,7 @@ class TA extends MY_Controller {
                 $this->db->query($str);
             }
         }
-        $settings = $this->db->select('*')->from('settings')->order_by('key')->get()->result();
+        $settings = $this->db->select('*')->from('settings')->order_by('id')->get()->result();
         $this->render('main', 'settings', ['settings' => $settings]);
     }
 
@@ -56,6 +64,7 @@ class TA extends MY_Controller {
                 'tables' => $this->input->post('tables'),
                 'answer' => $this->input->post('query')
             ];
+            $data['description'] = $this->imageDownloader($id, $data['description']);
             if ($id === False) {
                 $this->db->insert('problems', $data);
                 $id = $this->db->insert_id();
@@ -86,6 +95,21 @@ class TA extends MY_Controller {
             'test' => $this->getResultNTable($id, 'test'), 
             'judge' => $this->getResultNTable($id, 'judge')
         ]);
+    }
+
+    private function imageDownloader ($prob_id, $html) {
+        $j = 0;
+        if (preg_match_all('/<img src=.([^ \'"]+)/', $html, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $img) {
+                list(, $img) = $img;
+                if (strpos($img, base_url()) === false) {
+                    $img_name = $prob_id . "_" . $j++ . ".jpg";
+                    file_put_contents(FCPATH . 'img/' . $img_name, file_get_contents($img));
+                    $html = str_replace($img, base_url('img/' . $img_name), $html);
+                }
+            }
+        }
+        return $html;
     }
 
     private function getResultNTable ($problem_id, $database, $SQL = '') {

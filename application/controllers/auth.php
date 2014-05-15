@@ -30,6 +30,14 @@ class Auth extends MY_Controller {
         $this->session->set_userdata('id', $id);
         $this->session->set_userdata('stdid', $this->input->post('stdid'));
         $this->logger->log("login successfully", 'auth');
+
+        // lock insert
+        if ($this->session->userdata('lock_hash') === False) {
+            $this->session->set_userdata('lock_hash', sha1(uniqid()));
+        }
+        $this->db->where('id', $id)
+            ->where('lock_hash', '')
+            ->update('students', ['lock_hash' => $this->session->userdata('lock_hash')]);
     }
 
     public function login () {

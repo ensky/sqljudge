@@ -78,22 +78,24 @@
 </div>
 */ ?>
 
-<script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
 <script>
-    tinymce.init({
-        selector:'.tinymce',
-        plugins: [
-            'contextmenu code image'
-        ],
-        contextmenu: "link image inserttable | cell row column deletetable"
-    });
+    $(function () {
+        tinymce.init({
+            selector:'.tinymce',
+            plugins: [
+                'contextmenu code image'
+            ],
+            contextmenu: "link image inserttable | cell row column deletetable",
+            convert_urls: false
+        });
 
-    $('button.fold').click(function () {
-        var el = $(this).attr('data-target'),
-            span = $(this).find('span');
-        $(el).find('tbody').toggle(500);
-        var css = span.hasClass('glyphicon-minus') ? 'glyphicon-plus' : 'glyphicon-minus';
-        span.attr('class', 'glyphicon ' + css);
+        $('button.fold').click(function () {
+            var el = $(this).attr('data-target'),
+                span = $(this).find('span');
+            $(el).find('tbody').toggle(500);
+            var css = span.hasClass('glyphicon-minus') ? 'glyphicon-plus' : 'glyphicon-minus';
+            span.attr('class', 'glyphicon ' + css);
+        });
+        $('.folded tbody').hide();
     });
-    $('.folded tbody').hide();
 </script>
