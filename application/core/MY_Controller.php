@@ -7,10 +7,10 @@ class MY_Controller extends CI_Controller {
 
     function __construct () {
         parent::__construct();
-        $this->loggedIn = $this->session->userdata('id') !== false;
+        $this->loggedIn = $this->session->userdata('stdid') !== false;
         $this->id = $this->session->userdata('id');
         $this->stdid = $this->session->userdata('stdid');
-        $this->isTA = preg_match('/^140.113.240.\d+$/', $_SERVER['REMOTE_ADDR']);
+        $this->isTA = preg_match('/^'. $this->setting->get('ta_ip') .'$/', $_SERVER['REMOTE_ADDR']);
         $this->isTesting = 
             $this->isTA ||
             time() >= strtotime($this->setting->get('start_time'))

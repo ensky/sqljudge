@@ -43,11 +43,8 @@ class TA extends MY_Controller {
             $data = $this->input->post();
             $insert = array();
             foreach ($data as $key => $val) {
-                $insert['key'] = $key;
-                $insert['value'] = $val;
-                $str = $this->db->insert_string('settings', $insert);
-                $str = str_replace('INSERT', 'REPLACE', $str);
-                $this->db->query($str);
+                $this->db->where('key', $key)
+                    ->update('settings', ['value' => $val]);
             }
         }
         $settings = $this->db->select('*')->from('settings')->order_by('id')->get()->result();

@@ -3,7 +3,7 @@
 <a id="title" href="<?= site_url('main') ?>" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to the Problem list</a>
 
 <h2>
-    <div><span class="label label-<?= $solved ? 'success' : 'primary' ?>"><?= $solved ? 'solved' : 'unsolved' ?></span> <?= $problem->title ?></div>
+    <div><span class="label label-<?= $solved ? 'success' : 'primary' ?>"><?= $solved ? 'solved' : 'unsolved' ?></span> <?= $problem->order ?>. <?= $problem->title ?></div>
 </h2>
 <div class="row">
     <div class="col-md-6">

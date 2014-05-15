@@ -4,10 +4,10 @@
 <?php foreach ($settings as $setting): ?>
 <div class="form-group">
     <label for="setting-form-<?= $setting->key ?>"><?= $setting->key ?></label>
-    <?php if ($setting->key == 'announcement' || $setting->key == 'help'): ?>
+    <?php if ($setting->type == 'textarea'): ?>
     <textarea id="setting-form-<?= $setting->key ?>" name="<?= $setting->key ?>" class="tinymce"><?= $setting->value ?></textarea>
     <?php else: ?>
-    <input type="text" id="setting-form-<?= $setting->key ?>" name="<?= $setting->key ?>" value="<?= $setting->value ?>">
+    <input class="form-control" type="text" id="setting-form-<?= $setting->key ?>" name="<?= $setting->key ?>" value="<?= $setting->value ?>">
     <?php endif; ?>
 </div>
 <?php endforeach; ?>

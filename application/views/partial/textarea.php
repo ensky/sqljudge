@@ -7,12 +7,8 @@ $(function () {
         smartIndent: true,
         lineNumbers: true,
         matchBrackets : true,
-        autofocus: true 
+        autofocus: true,
+        lineWrapping: true
     });
-    var input = document.getElementById("selectTheme");
-    function selectTheme() {
-        var theme = input.options[input.selectedIndex].innerHTML;
-        editor.setOption("theme", theme);
-    }
 });
 </script>

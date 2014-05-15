@@ -14,7 +14,7 @@ body {
     margin-top: 5px;
 }
 .CodeMirror {
-    font-size: 120%;height: 200px;
+    font-size: 120%;/*height: 400px;*/
 }
 
 .dbtables {
