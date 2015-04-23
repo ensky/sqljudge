@@ -1,0 +1,10 @@
+Database Judge
+===================
+Auto judge SQL quries.
+
+Install
+----------
+1. import application/exampleDatabase.sql
+2. create db user, grant privilege, create application/config/database.php based on database.default-removeme.php
+3. modify sqljudge_sys table, configure TA IP (a regexp)
+4. create a student for login, you'll have TA privilege if you're ip match TA IP
