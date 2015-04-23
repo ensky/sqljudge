@@ -52,6 +52,7 @@ class Main extends MY_Controller {
         ];
         $inputSQL = $this->killSemicolon($this->input->post('query'));
         if ($inputSQL) {
+            set_time_limit(10);
             $type = $this->input->post('type') === 'Test' ? 'test' : 'judge';
             $db = $this->load->database($type, True);
 
