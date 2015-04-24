@@ -55,9 +55,11 @@ class Main extends MY_Controller {
             set_time_limit(10);
             $type = $this->input->post('type') === 'Test' ? 'test' : 'judge';
             $db = $this->load->database($type, True);
+			$db->simple_query("SET SESSION sql_mode='ANSI,STRICT_ALL_TABLES'");
 
             if ($type == 'judge') {
                 $testDB = $this->load->database('test', True);
+				$testDB->simple_query("SET SESSION sql_mode='ANSI,STRICT_ALL_TABLES'");
                 $result->type = $type;
                 if ($this->judgeing($problem->answer, $inputSQL, $db) && $this->judgeing($problem->answer, $inputSQL, $testDB)) {
                     $result->is_correct = '1';
@@ -146,14 +148,15 @@ SQL;*/
         if ($problem_id == false) 
             return (object)['data' => [], 'tables' => []];
 
-        $db = $this->load->database($database, True);
+		$db = $this->load->database($database, True);
+		$db->simple_query("SET SESSION sql_mode='ANSI,STRICT_ALL_TABLES'");
         $result = (object)[];
 
         $problem = $this->db->select('*')
             ->from('problems')
             ->where('id', $problem_id)->get()->row();
 
-        $SQL = empty($SQL) ? $problem->answer : $SQL;
+		$SQL = empty($SQL) ? $problem->answer : $SQL;
         $query = $db->query($SQL);
         if (!$query) {
             $result->error = $db->_error_message();
