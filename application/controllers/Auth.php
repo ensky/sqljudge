@@ -32,7 +32,7 @@ class Auth extends MY_Controller {
         $this->logger->log("login successfully", 'auth');
 
         // lock insert
-        if ($this->session->userdata('lock_hash') === False) {
+        if (!$this->isTesting && $this->session->userdata('lock_hash') === NULL) {
             $this->session->set_userdata('lock_hash', sha1(uniqid()));
         }
         $this->db->where('id', $id)

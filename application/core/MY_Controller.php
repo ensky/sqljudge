@@ -18,7 +18,7 @@ class MY_Controller extends CI_Controller {
 
         // lock check
         
-        if ($this->id && $this->uri->segment(1) != 'auth') {
+        if (!$this->isTesting && $this->id && $this->uri->segment(1) != 'auth') {
             $locked = $this->db->select('lock_hash')->from('students')->where('id', $this->id)->get()->row()->lock_hash !== $this->session->userdata('lock_hash');
             if ($locked) {
                 $this->session->unset_userdata('id');
