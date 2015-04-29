@@ -1,6 +1,8 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Main extends MY_Controller {
+	private $problem;
+
     function __construct () {
         parent::__construct();
         if (! $this->id OR ! $this->isTesting) {
@@ -37,139 +39,283 @@ class Main extends MY_Controller {
         ]);
 	}
 
-    public function problem ($id) {
-        $problem = $this->db->select('*')
-            ->from('problems')
-            ->where('id', $id)
-            ->get()->row();
-        if (!count($problem) > 0) {
+	public function problem ($id) {
+		if(!$this->loadProblem($id)){
             redirect('main');
-        }
+		}
+
+		$problem = $this->problem;
+		$inputSQL = $this->input->post('query');
 
         $result = (object) [
             'error' => '',
-            'type' => ''
+			'type' => '',
+			'data' => []
         ];
-        $inputSQL = $this->killSemicolon($this->input->post('query'));
         if ($inputSQL) {
             set_time_limit(10);
-            $type = $this->input->post('type') === 'Test' ? 'test' : 'judge';
-            $db = $this->load->database($type, True);
+            $result->type = $this->input->post('type') === 'Test' ? 'test' : 'judge';
 
-            if ($type == 'judge') {
-                $testDB = $this->load->database('test', True);
-                $result->type = $type;
-                if ($this->judgeing($problem->answer, $inputSQL, $db) && $this->judgeing($problem->answer, $inputSQL, $testDB)) {
-                    $result->is_correct = '1';
-                } else {
-                    $result->is_correct = '0';
-                }
-                
+			if ($this->input->post('type') !== 'Test') {
+				$result->type = 'judge';
+				$result->is_correct = $this->judge($inputSQL) ? '1' : '0';
+
+				// update student's answer
                 $this->db->where('student_id', $this->id)
                     ->where('problem_id', $id)
-                    ->delete('student_answers');
+					->delete('student_answers');
+
                 $update = [
                     'student_id' => $this->id,
                     'problem_id' => $id,
                     'answer' => $inputSQL,
                     'is_correct' => $result->is_correct
                 ];
-                $this->db->insert('student_answers', $update);
-                // clear data
-                $result->data = [];
-                $this->logger->log('submit an answer, result: ' . $result->is_correct, 'problem:'. $id, $inputSQL);
-            } else {
-                $result = (object)$this->getResultNTable($id, $type, $inputSQL);
-                $result->type = $type;
+				$this->db->insert('student_answers', $update);
+
+				$this->logger->log('submit an answer, result: ' . $result->is_correct, 'problem:'. $id, $inputSQL);
+			} else {
+				$result = $this->getUserResult($inputSQL);
                 $this->logger->log('test an answer', 'problem:'. $id, $inputSQL);
-            }
+			}
         }
 
         $answer = $this->db->select('*')
             ->from('student_answers')
             ->where('student_id', $this->id)
             ->where('problem_id', $id)
-            ->get()->row();
-        $answer = count($answer) > 0 ? $answer : (object) [
-            'answer' => '',
-            'is_correct' => false
-        ];
+			->get()->row();
+
+		if(count($answer) == 0)
+			$answer = (object) [
+				'answer' => '',
+				'is_correct' => false];
+
         $solved = $answer->is_correct == '1';
         $this->render('main', 'problem', [
             'problem' => $problem,
             'answer' => $answer,
             'solved' => $solved,
-            'result' => $result,
-            'test' => $this->getResultNTable($id, 'test'),
+			'result' => $result,
+			'test_tables' => $this->getTestData(),
+			'test_result' => $this->getReferenceResultData(),
             'score' => $this->db->select('score')
                 ->from('students')
                 ->where('id', $this->id)
                 ->get()->row()->score
         ]);
-    }
+	}
 
-    private function killSemicolon ($sql) {
-        return preg_replace('/;+[\s\t]*$/', '', $sql);
-    }
+	public function cleanUp(){
+		if(!$this->isTA)
+			die('No permission');
 
-    private function judgeing ($sql1, $sql2, &$db) {
-        $sql1 = "(\n" . $sql1 . "\n)";
-        $sql2 = "(\n" . $sql2 . "\n)";
-        $c1 = $db->query("SELECT COUNT(*) c FROM $sql1 T1");
-        $c2 = $db->query("SELECT COUNT(*) c FROM $sql2 T2");
-        $c3 = $db->query("SELECT COUNT(*) c FROM (SELECT * FROM $sql1 T1 UNION SELECT * FROM $sql2 T2) AS unioned");
-        /*
-$sql = <<<SQL
-SELECT
-  CASE WHEN count1 = count2 AND count1 = count3 THEN 'identical' ELSE 'mis-matched' END AS result
-FROM
-(
-  SELECT
-    (SELECT COUNT(*) FROM ($sql1) T1) AS count1,
-    (SELECT COUNT(*) FROM ($sql2) T2) AS count2,
-    (SELECT COUNT(*) FROM (SELECT * FROM ($sql1) T1 UNION SELECT * FROM ($sql2) T2) AS unioned) AS count3
-)
-  AS counts
-SQL;*/
-        // $q = $db->query($sql);
-        // if (!$q)
-            // return false;
-        // return $q->row()->result === 'identical';
-        return $c1 && $c2 && $c3 && $c1->num_rows() == 1
-            && $c2->num_rows() == 1
-            && $c3->num_rows() == 1
-            && ($c1n = $c1->row()->c) == $c2->row()->c
-            && $c1n == $c3->row()->c;
-    }
+		$pdo = $this->db->conn_id;
+		$temp_databases = $pdo->query('SHOW DATABASES LIKE "sqljudge\_tmp\_%";')->fetchAll(PDO::FETCH_COLUMN, 0);
+		foreach($temp_databases as $db){
+			$pdo->query("DROP DATABASE `$db`");
+		}
 
-    private function getResultNTable ($problem_id, $database, $SQL = '') {
-        if ($problem_id == false) 
-            return (object)['data' => [], 'tables' => []];
+		$temp_users = $pdo->query('SELECT CONCAT("`", user, "`@`", host,"`") FROM  mysql.user WHERE user LIKE "sqljudge_t%";')
+			->fetchAll(PDO::FETCH_COLUMN, 0);
+		foreach($temp_users as $temp_user){
+			$pdo->query("DROP USER $temp_user");
+		}
+		echo "done";
+	}
 
-        $db = $this->load->database($database, True);
-        $result = (object)[];
+	// TODO: these should be put in a model
+	static function santanize_identifier($string){
+		return preg_replace('/[^A-Za-z0-9\_]/', '', $string);
+	}
 
-        $problem = $this->db->select('*')
+	private function loadProblem($id){
+		if(!($this->problem = $this->db->select('*')
             ->from('problems')
-            ->where('id', $problem_id)->get()->row();
+            ->where('id', $id)
+			->get()->row()))
+			return false;
 
-        $SQL = empty($SQL) ? $problem->answer : $SQL;
-        $query = $db->query($SQL);
-        if (!$query) {
-            $result->error = $db->_error_message();
-            $result->data = [];
-        } else {
-            $result->error = false;
-            $result->data = $query->result_array();
-        }
+		// dbname should be safe, santanize anyway
+		$this->problem->test_db = $this->santanize_identifier("sqljudge_{$this->problem->dbname}_test");
+		$this->problem->judge_db = $this->santanize_identifier("sqljudge_{$this->problem->dbname}_judge");
 
-        $result->tables = [];
-        $tables = explode(',', $problem->tables);
-        foreach ($tables as $table) {
-            $result->tables[$table] = $db->select('*')->from($table)->get()->result();
-        }
-        return $result;
-    }
+		// auto load table names if not probided by question entry
+		if(!empty($this->problem->tables)){
+			$this->problem->tables = array_map(array(self, 'santanize_identifier'), explode(',', $this->problem->tables));
+		}else{
+			$pdo = $this->db->conn_id;
+			if(($stmt = $pdo->query("SHOW TABLES IN {$this->problem->test_db}")) === False)
+				trigger_error(var_dump($pdo->errorInfo()));
+			
+			$this->problem->tables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+		}
+
+		foreach($this->problem->tables as $table){
+			// tables should have a safe name
+			assert($table == $this->santanize_identifier($table));
+		}
+
+		return true;
+	}
+	// return all test table data
+	//
+	private function getTestData(){
+		if(!$this->problem)
+			throw new Exception("No problem selected");
+
+		$result = array();
+		foreach ($this->problem->tables as $table) {
+			$from = "`{$this->problem->test_db}`.`$table`";
+            $result[$table] = $this->db->select('*')->from($from)->get()->result();
+		}
+
+		return $result;
+	}
+
+	private function createTempUser(){
+		$pdo = new PDO($this->db->dsn, $this->db->username, $this->db->password);
+		$trial = 0;
+
+		do{
+			$username = 'sqljudge_t'.substr(uniqid(), -6);
+			$sql = "CREATE USER '$username'@'localhost';";
+		}while($pdo->exec($sql) === FALSE || (($trial++ > 10) && die('cannot create temp user')));
+
+		return $username;
+	}
+
+	// if sql is from TA, it's executed with test user,
+	// if by student, a temp user is passed in to grant permission
+	private function createTempDatabase($template, $student_temp_user = false){
+		assert($this->problem, 'problem should be loaded');
+		// we will switch DB, so don't reuse PDO from $this->db
+		$pdo = new PDO($this->db->dsn, $this->db->username, $this->db->password);
+
+		$prefix = ($student_temp_user)? "sqljudge_tmp_usr_": "sqljudge_tmp_ta_";
+
+		// loop until get a new db
+		while(1){
+			$dbname = uniqid($prefix);
+			if($this->db->query("CREATE DATABASE $dbname"))
+				break;			
+		}
+
+		if($student_temp_user){
+			$escaped_db_name = str_replace('_', '\_', $dbname);
+			if($pdo->exec("GRANT ALL PRIVILEGES ON `$escaped_db_name`.* TO '$student_temp_user'@'localhost'") === FALSE)
+				die('cannot grant priv to temp user');
+		}
+
+		// copy database
+		foreach($this->problem->tables as $table){
+			assert($pdo->query("USE $template"));
+			$stmt = $pdo->query("SHOW CREATE TABLE $table");
+			$sql = $stmt->fetchColumn(1);
+
+			// Do the copy
+			assert($pdo->query("USE $dbname; $sql; INSERT INTO `$table` SELECT * FROM `$template`.`$table` "));
+		}
+
+		// TODO: register temp database, for cron delete
+		return $dbname;
+	}
+
+	private function dropDatabase($dbname){
+		return $this->db->query("DROP DATABASE $dbname;");
+	}
+
+	private function dropUser($username){
+		return  $this->db->query("DROP USER '$username'@'localhost';");
+	}
+
+	private function getReferenceResultData($judge_mode = false){
+		$template = ($judge_mode)? $this->problem->judge_db : $this->problem->test_db;
+
+		// create test database
+		$temp_db = $this->createTempDatabase($template);
+
+		// run correct answer with test user
+		$pdo = new PDO('mysql:host='.SQLJUDGE_DB_HOST.';dbname='.$temp_db, SQLJUDGE_DB_TEST_USER, SQLJUDGE_DB_TEST_PASS);
+		$result = $this->getResult($pdo);
+
+		// delete temp database
+		$this->dropDatabase($temp_db);
+
+		return $result->data;
+	}
+
+	private function getUserResult($sql, $judge_mode = false){
+		$template = ($judge_mode)? $this->problem->judge_db : $this->problem->test_db;
+		$temp_user = $this->createTempUser();
+		$temp_db = $this->createTempDatabase($template, $temp_user);
+
+		$pdo = new PDO('mysql:host='.SQLJUDGE_DB_HOST.';dbname='.$temp_db, $temp_user, '');
+		$result = $this->getResult($pdo, $sql);
+		$result->type = ($judge_mode)? 'judge' : 'test';
+
+		$this->dropDatabase($temp_db);
+		$this->dropUser($temp_user);
+
+		return $result;
+	}
+
+	//XXX: We currently compare all results in PHP, this would be too slow if we have too many results
+	// alternative method is to create a view in user's temp database (run by user temp account) 
+	// and reference temp database (run by test account)
+	// then compare the the views with UNION like ensky's previous implementation
+	// the challenge would be find out correct SELECT statement in the query
+	// XXX: we should also impose ORDER BY requirements, to avoid using intersect
+	private function judge($sql){
+		$user_result_data = $this->getUserResult($sql, true)->data;
+		$correct_result_data = $this->getReferenceResultData(true);
+		$correct_row_count = count($correct_result_data);
+
+		return (!empty($user_result_data) &&
+				count($user_result_data[0]) == count($correct_result_data[0]) && // same col count
+				count($user_result_data) == $correct_row_count &&
+				count(array_uintersect($user_result_data, $correct_result_data, function($a,$b){
+					$a = array_values($a) ;
+					$b = array_values($b);
+					return ($a == $b)? 0 : (($a > $b)? 1 : -1);
+				})) == $correct_row_count);
+	}
+
+	// numeric_keys is used under judge mode
+	private function getResult($pdo, $sql = ''){
+		$result = (object)['data' => [], 'error' => false];
+		$i = -1; // query line
+		if(empty($sql))
+			$sql = $this->problem->answer;
+
+		$stmt = $pdo->query($sql);
+		$error = $pdo->errorInfo();
+
+		if($stmt !== FALSE){
+			$result->affected = [];
+			do{
+				$i++;
+				$result->affected []= $stmt->rowCount();
+
+				if(empty($this->problem->verifier))
+					$result->data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+			}while($stmt->nextRowset());// loop through each query
+
+			$error = $stmt->errorInfo();
+			if($error[0] === "00000"){ // all query success
+				if($this->problem->verifier){
+					$stmt = $pdo->query($this->problem->verifier);
+					$result->data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				}
+
+				return $result;
+			}
+		}
+
+		$result->error = "$error[1]: $error[2]";
+		return $result;
+	}
 
     public function help () {
         $this->render('main', 'help', []);

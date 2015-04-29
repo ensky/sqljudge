@@ -14,7 +14,7 @@
         <div class="block">
             <h2>Tables <small>Tables used in the problem(test only, different from the table for judge)</small></h2>
             <div class="dbtables">
-            <?php foreach ($test->tables as $tableName => $table): ?>
+            <?php foreach ($test_tables as $tableName => $table): ?>
                 <hr>
                 <h3><?= $tableName ?> <button data-target="#table-<?= $tableName ?>" class="btn fold"><span class="glyphicon glyphicon-plus"></span></button></h3>
                 <div id="table-<?= $tableName ?>" class="folded">
@@ -25,7 +25,7 @@
         </div>
         <div class="block">
             <h2>Answers <small>Answers according to the above test tables</small></h2>
-            <?php $this->load->view('partial/table', ['table' => $test->data]); ?>
+            <?php $this->load->view('partial/table', ['table' => $test_result]); ?>
         </div>
         <script type="text/javascript">
         $(function() {
@@ -78,7 +78,7 @@
         </div>
         <div id="result" class="block">
             <h2>Result <small>Testing result will display here</small></h2>
-            <?php if (isset($result->error)): ?>
+			<?php if (isset($result->error)): ?>
                 <?php if($result->error): ?>
                 <div class="alert alert-danger">Database error: <?= $result->error ?></div>
                 <?php endif; ?>
