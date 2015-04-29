@@ -38,6 +38,8 @@
 |
 */
 
+$route['ta/(.+)'] = "TA/$1";
+
 $route['default_controller'] = "auth/login";
 $route['404_override'] = '';
 
