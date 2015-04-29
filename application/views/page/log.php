@@ -32,7 +32,7 @@ $(function () {
         stopped = false,
         maxid = 0,
         getLogs = function () {
-            $.get("<?= site_url() ?>ta/get_log/" + maxid, {}, function (logs) {
+            $.get("<?= site_url('ta/get_log') ?>/" + maxid, {}, function (logs) {
                 logs = JSON.parse(logs);
                 logs.forEach(function (log, index) {
                     $table.row.add( log );
