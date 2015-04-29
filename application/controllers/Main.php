@@ -288,6 +288,7 @@ class Main extends MY_Controller {
 		if(empty($sql))
 			$sql = $this->problem->answer;
 
+		$pdo->exec("SET SESSION sql_mode='ANSI,STRICT_ALL_TABLES';");
 		$stmt = $pdo->query($sql);
 		$error = $pdo->errorInfo();
 
