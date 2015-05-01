@@ -13,7 +13,11 @@
     <textarea class="tinymce" id="description" name="description"><?= $problem->description ?></textarea>
 </div>
 <div class="form-group">
-    <label for="tables">Tables used(請先在 sqljudge_problem_test 和 sqljudge_problem_judge 內建立好需要的table和data, test是測試用, judge是正式改考卷的)</label>
+    <label for="dbname">資料庫主要名稱，請先建立好 sqljudge_主要名稱_test 跟 sqljudge_主要名稱_judge 兩個資料庫</label>
+    <input type="text" id="dbname" name="dbname" placeholder="例如 q1" class="form-control" value="<?= $problem->dbname ?>">
+</div>
+<div class="form-group">
+    <label for="tables">資料表顯示順序，選填。只影響顯示介面，使用者有權限存取資料庫中的任何東西</label>
     <input type="text" id="tables" name="tables" placeholder="逗點分隔，如: fruits,shopping_list" class="form-control" value="<?= $problem->tables ?>">
 </div>
 <div class="form-group">
@@ -21,14 +25,20 @@
     <input type="text" id="score" name="score" placeholder="就是配分" class="form-control" value="<?= ($problem->score ? $problem->score : 5) ?>">
 </div>
 <div class="form-group">
-    <label>Answer SQL</label>
-    <?php $this->load->view('partial/textarea', ['answer' => $problem]); ?>
+    <label>解答 SQL</label>
+    <?php $this->load->view('partial/textarea', ['input_name' => 'answer', 'query' =>  $problem->answer]); ?>
+</div>
+<div class="form-group">
+    <label>驗證 SQL (選填，例如題目考使用 UPDATE，在這寫 SELECT 來檢查結果正確)</label>
+    <?php $this->load->view('partial/textarea', ['input_name' => 'verifier', 'query' =>  $problem->verifier]); ?>
 </div>
 <input type="submit" class="btn btn-primary" value="Test and Save">
 </form>
 
 <hr>
 
+<?php
+/*
 <div class="row">
 <div class="col-md-12">
     <h3>Testing database</h3>
@@ -41,7 +51,7 @@
 
             <?php ! $test->error && $this->load->view('partial/table', ['table' => $test->data]); ?>
         <?php endif; ?>
-    </div>
+	</div>
     <div class="block">
         <h2>Table info</h2>
         <?php foreach ($test->tables as $name => $table): ?>
@@ -51,7 +61,8 @@
             </div>
         <?php endforeach; ?>
     </div>
-</div>
+	</div>
+*/ ?>
 <?php /*
 <div class="col-md-6">
     <h3>Judging  database</h3>

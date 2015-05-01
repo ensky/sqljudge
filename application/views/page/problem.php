@@ -49,7 +49,7 @@
             <?= form_open('main/problem/' . $problem->id, ['id'=>'form-sql','method' => 'post', 'data-pjax' => 'true']) ?>
             <div class="row">
                 <div class="col-md-12 form-group">
-                    <?php $this->load->view('partial/textarea'); ?>
+                    <?php $this->load->view('partial/textarea', ['query' => $query, 'input_name' => 'query']); ?>
                 </div>
             </div>
             <div class="row">

@@ -94,7 +94,8 @@ class Main extends MY_Controller {
         $solved = $answer->is_correct == '1';
         $this->render('main', 'problem', [
             'problem' => $problem,
-            'answer' => $answer,
+			'answer' => $answer,
+			'query' => ($inputSQL) ? $inputSQL : $answer->answer,
             'solved' => $solved,
 			'result' => $result,
 			'test_tables' => $this->getTestData(),

@@ -51,15 +51,17 @@ class TA extends MY_Controller {
         $this->render('main', 'settings', ['settings' => $settings]);
     }
 
-    public function problem_edit ($id = False) {
+	public function problem_edit ($id = False) {
         if ($this->input->post() != false) {
             $data = [
                 'order' => $this->input->post('order'),
                 'title' => $this->input->post('title'),
                 'description' => $this->input->post('description'),
-                'score' => $this->input->post('score'),
+				'score' => $this->input->post('score'),
+				'dbname' => $this->input->post('dbname'),
                 'tables' => $this->input->post('tables'),
-                'answer' => $this->input->post('query')
+                'answer' => $this->input->post('answer'),
+				'verifier' => $this->input->post('verifier')
             ];
             $data['description'] = $this->imageDownloader($id, $data['description']);
             if ($id === False) {
@@ -76,9 +78,11 @@ class TA extends MY_Controller {
             'id' => '',
             'title' => '',
             'description' => '',
-            'score' => '',
+			'score' => '',
+			'dbname' => '',
             'tables' => '',
-            'answer' => ''
+			'answer' => '',
+			'verifier' => ''
         ];
         $result = (object) [];
         if ($id !== false) {
@@ -88,9 +92,10 @@ class TA extends MY_Controller {
         }
 
         $this->render('main', 'new_problem', [
-            'problem' => $problem,
-            'test' => $this->getResultNTable($id, 'test'), 
-            'judge' => $this->getResultNTable($id, 'judge')
+			'problem' => $problem,
+//TODO: albb: needs to add multi db support
+//            'test' => $this->getResultNTable($id, 'test'),
+//            'judge' => $this->getResultNTable($id, 'judge')
         ]);
     }
 
@@ -109,11 +114,10 @@ class TA extends MY_Controller {
         return $html;
     }
 
-    private function getResultNTable ($problem_id, $database, $SQL = '') {
+/*    private function getResultNTable ($problem_id, $database, $SQL = '') {
         if ($problem_id == false) 
             return (object)['data' => [], 'tables' => []];
 
-        $db = $this->load->database($database, True);
         $result = (object)[];
 
         $problem = $this->db->select('*')
@@ -136,6 +140,6 @@ class TA extends MY_Controller {
             $result->tables[$table] = $db->select('*')->from($table)->get()->result();
         }
         return $result;
-    }
+}*/
 
 }
