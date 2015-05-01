@@ -106,8 +106,8 @@ class TA extends MY_Controller {
                 list(, $img) = $img;
                 if (strpos($img, base_url()) === false) {
                     $img_name = $prob_id . "_" . $j++ . ".jpg";
-                    file_put_contents(FCPATH . 'img/' . $img_name, file_get_contents($img));
-                    $html = str_replace($img, base_url('img/' . $img_name), $html);
+                    file_put_contents(FCPATH . 'img/question/' . $img_name, file_get_contents($img));
+                    $html = str_replace($img, base_url('img/question/' . $img_name), $html);
                 }
             }
         }
