@@ -16,9 +16,9 @@
             <div class="dbtables">
             <?php foreach ($test_tables as $tableName => $table): ?>
                 <hr>
-                <h3><?= $tableName ?> <button data-target="#table-<?= $tableName ?>" class="btn fold"><span class="glyphicon glyphicon-plus"></span></button></h3>
-                <div id="table-<?= $tableName ?>" class="folded">
-                    <?php $this->load->view('partial/table', ['table' => $table]); ?>
+                <h3><?= $tableName ?> <button data-target="#table-<?= $tableName ?>" class="btn fold"><span class="glyphicon glyphicon-minus"></span></button></h3>
+                <div id="table-<?= $tableName ?>" class="">
+                    <?php $this->load->view('partial/table', ['table' => $table, 'schema' => $test_schema[$tableName]]); ?>
                 </div>
             <?php endforeach; ?>
             </div>
@@ -90,7 +90,7 @@
                     <?php endif; ?>
                 <?php endif; ?>
                 <?php if ($result->type == 'test'): ?>
-                    <?php ! $result->error && $this->load->view('partial/table', ['table' => $result->data]); ?>
+                    <?php ! $result->error && $this->load->view('partial/table', ['table' => $result->data, 'schema' => null]); ?>
                 <?php endif; ?>
             <?php endif; ?>
         </div>
