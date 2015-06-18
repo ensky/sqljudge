@@ -1,5 +1,5 @@
 <div class="header">
-    <h1>Database 2014 online judging system</h1>
+    <h1>Database 2015 online judging system</h1>
 </div>
 <?= form_open('auth/login', ['class'=>'form', 'method' => 'post']) ?>
     <?php if ($this->session->flashdata('err')): ?>
