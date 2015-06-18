@@ -12,6 +12,9 @@ $(function () {
 		autofocus: true,
 		hintOptions: {
 			completeSingle: false
+			<?php if(isset($schema) && $schema): ?>
+				,tables: <?= json_encode(schemaToHint($schema))?>
+			<?php endif; ?>
 		},
 		lineWrapping: true
 	});

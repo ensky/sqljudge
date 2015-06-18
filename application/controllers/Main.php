@@ -3,12 +3,15 @@
 class Main extends MY_Controller {
 	private $problem;
 
-    function __construct () {
-        parent::__construct();
-        if (! $this->id OR ! $this->isTesting) {
-            redirect('auth/logout');
-        }
-    }
+	function __construct () {
+		parent::__construct();
+
+		if (! $this->id OR ! $this->isTesting) {
+			redirect('auth/logout');
+		}
+
+		$this->load->helper('problem');
+	}
 
 	public function index() {
         $problems = $this->db->select('P.*, PA.correct, PA.total_submit')
