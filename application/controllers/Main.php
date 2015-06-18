@@ -143,7 +143,7 @@ class Main extends MY_Controller {
 
 		// auto load table names if not probided by question entry
 		if(!empty($this->problem->tables)){
-			$this->problem->tables = array_map(array(self, 'santanize_identifier'), explode(',', $this->problem->tables));
+			$this->problem->tables = array_map(array($this, 'santanize_identifier'), explode(',', $this->problem->tables));
 		}else{
 			$pdo = $this->db->conn_id;
 			if(($stmt = $pdo->query("SHOW TABLES IN {$this->problem->test_db}")) === False)
@@ -238,7 +238,7 @@ class Main extends MY_Controller {
 
 		// run correct answer with test user
 		$pdo = new PDO('mysql:host='.SQLJUDGE_DB_HOST.';dbname='.$temp_db, SQLJUDGE_DB_TEST_USER, SQLJUDGE_DB_TEST_PASS);
-		$result = $this->getResult($pdo);
+		$result = $this->getResult($pdo, '', true);
 
 		// delete temp database
 		$this->dropDatabase($temp_db);
@@ -252,7 +252,7 @@ class Main extends MY_Controller {
 		$temp_db = $this->createTempDatabase($template, $temp_user);
 
 		$pdo = new PDO('mysql:host='.SQLJUDGE_DB_HOST.';dbname='.$temp_db, $temp_user, '');
-		$result = $this->getResult($pdo, $sql);
+		$result = $this->getResult($pdo, $sql, $judge_mode);
 		$result->type = ($judge_mode)? 'judge' : 'test';
 
 		$this->dropDatabase($temp_db);
@@ -283,7 +283,7 @@ class Main extends MY_Controller {
 	}
 
 	// numeric_keys is used under judge mode
-	private function getResult($pdo, $sql = ''){
+	private function getResult($pdo, $sql = '', $use_verifier_result=false){
 		$result = (object)['data' => [], 'error' => false];
 		$i = -1; // query line
 		if(empty($sql))
@@ -299,14 +299,14 @@ class Main extends MY_Controller {
 				$i++;
 				$result->affected []= $stmt->rowCount();
 
-				if(empty($this->problem->verifier))
+				if(empty($this->problem->verifier) || !$use_verifier_result)
 					$result->data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 			}while($stmt->nextRowset());// loop through each query
 
 			$error = $stmt->errorInfo();
 			if($error[0] === "00000"){ // all query success
-				if($this->problem->verifier){
+				if($this->problem->verifier && $use_verifier_result){
 					$stmt = $pdo->query($this->problem->verifier);
 					$result->data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 				}
