@@ -42,7 +42,7 @@
 
 	<?php /* TODO: tinymce is causing slow load on Main#problem() which doesn't even needs it, temp fix */ ?>
 	<?php if($this->router->fetch_class() == 'TA'): ?>
-	<script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
+		<script type="text/javascript" src="<?= base_url('js/tinymce/tinymce.min.js') ?>"></script>
 	<?php endif; ?>
     <script type="text/javascript">
     $(document).pjax('a:not(.npjax)', '#container');
