@@ -25,7 +25,7 @@
         </div>
         <div class="block">
             <h2>Answers <small>Answers according to the above test tables</small></h2>
-            <?php $this->load->view('partial/table', ['table' => $test_result]); ?>
+            <?php $this->load->view('partial/table', ['table' => $test_result, 'schema' => false]); ?>
         </div>
         <script type="text/javascript">
         $(function() {
@@ -90,7 +90,7 @@
                     <?php endif; ?>
                 <?php endif; ?>
                 <?php if ($result->type == 'test'): ?>
-                    <?php ! $result->error && $this->load->view('partial/table', ['table' => $result->data, 'schema' => null]); ?>
+                    <?php ! $result->error && $this->load->view('partial/table', ['table' => $result->data, 'schema' => false]); ?>
                 <?php endif; ?>
             <?php endif; ?>
         </div>

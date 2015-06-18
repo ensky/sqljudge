@@ -3,7 +3,12 @@
     <thead>
         <tr>
             <?php foreach ($table[0] as $col => $names): ?>
-            <th><?= $col ?></th>
+			<th>
+				<?= $col ?>
+				<?php if(isset($schema) && $schema && $column_meta = $schema[$col]): ?>
+					<span class="column-type"><?= $column_meta['type'] ?></span>
+				<?php endif; ?>
+			</th>
             <?php endforeach; ?>
         </tr>
     </thead>

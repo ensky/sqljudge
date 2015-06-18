@@ -98,6 +98,7 @@ class Main extends MY_Controller {
 			'query' => ($inputSQL) ? $inputSQL : $answer->answer,
             'solved' => $solved,
 			'result' => $result,
+			'test_schema' => $this->getTestSchema(),
 			'test_tables' => $this->getTestData(),
 			'test_result' => $this->getReferenceResultData(),
             'score' => $this->db->select('score')
@@ -159,6 +160,30 @@ class Main extends MY_Controller {
 
 		return true;
 	}
+
+
+	// get the schema form test db, judge db should have the same
+	private function getTestSchema(){
+		$schema = array();
+		$results = $this->db
+			->select('table_name, column_name, column_type, column_default, is_nullable, column_comment')
+			->from('information_schema.columns')
+			->where('table_schema', $this->problem->test_db)
+			->order_by('ordinal_position')
+			->get()
+			->result();
+
+		foreach($results as $row){
+			$schema[$row->table_name][$row->column_name] = array(
+				'type' => $row->column_type,
+				'default' => $row->column_default,
+				'nullable' => $row->is_nullable,
+				'comment' => $row->column_comment
+			);
+		}
+		return $schema;
+	}
+
 	// return all test table data
 	//
 	private function getTestData(){

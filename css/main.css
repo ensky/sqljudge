@@ -73,3 +73,10 @@ body {
     padding: .5em .7em;
     vertical-align: middle;
 }
+
+/* table column meta */
+.column-type{
+    font-weight: normal;
+    font-style: italic;
+    color: #888;
+}
