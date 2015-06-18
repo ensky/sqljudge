@@ -18,6 +18,7 @@
     $(function () {
         tinymce.init({
             selector:'.tinymce',
+			convert_urls: false,
             plugins: [
                 'contextmenu code'
             ],
